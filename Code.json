@@ -1,0 +1,210 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "data": {
+    "url": "https://raw.githubusercontent.com/colmr/vis_class/master/primary_schools.csv"
+  },
+  "hconcat": [
+    {
+      "width": 100,
+      "height": 505,
+      "transform": [
+        {"filter": {"selection": "pts"}},
+        {"filter": {"selection": "brush"}}
+      ],
+      "selection": {
+        "county_click": {
+          "type": "multi",
+          "fields": ["County"]
+        }
+      },
+      "mark": "bar",
+      "encoding": {
+        "y": {
+          "field": "County",
+          "type": "nominal",
+          "axis": {
+            "title": null,
+            "labelFontSize": 13
+          }
+        },
+        "x": {
+          "field": "Sex",
+          "type": "quantitative",
+          "aggregate": "count",
+          "axis": {
+            "title": "Number of Schools",
+            "titleFontSize": 14,
+            "labelFontSize": 13,
+            "titleFontWeight": "bold"
+          }
+        },
+        "color": {
+          "field": "Sex",
+          "type": "nominal",
+          "scale": {
+            "domain": ["Boys","Girls","Mixed"],
+            "range": ["#03fccf","#bb4ec7","#5157cf"]
+          }
+        },
+        "order": {
+          "field": "Sex",
+          "type": "nominal",
+          "sort": "descending"
+        },
+        "fillOpacity": {
+          "condition": {
+            "selection": "county_click",
+            "value": 1
+          },
+          "value": 0.3
+        }
+      }
+    },
+    {
+      "vconcat": [
+        {
+          "width": 400,
+          "height": 350,
+          "projection": {
+            "type": "conicConformal"
+          },
+          "layer": [
+            {
+              "data": {
+                "url": "https://raw.githubusercontent.com/colmr/vis_class/master/Ireland_custom_topjson.json",
+                "format": {
+                  "type": "topojson",
+                  "feature": "IRL_adm1"
+                }
+              },
+              "mark": {
+                "type": "geoshape",
+                "stroke": "white"
+              },
+              "encoding": {
+                "color": {"value": "#b1b8ba"}
+              }
+            },
+            {
+              "selection": {
+                "pts": {
+                  "type": "single",
+                  "fields": ["Sex"],
+                  "bind": "legend"
+                }
+              },
+              "transform": [
+                {"filter": {"selection": "county_click"}},
+                {"filter": {"selection": "brush"}},
+                {"filter": {"selection": "pts"}}
+              ],
+              "mark": "circle",
+              "encoding": {
+                "longitude": {
+                  "field": "Long",
+                  "type": "quantitative"
+                },
+                "latitude": {
+                  "field": "Lat",
+                  "type": "quantitative"
+                },
+                "color": {
+                  "field": "Sex",
+                  "type": "nominal",
+                  "scale": {
+                    "domain": ["Boys","Girls","Mixed"],
+                    "range": ["#03fccf","#bb4ec7","#5157cf"]
+                  }
+                },
+                "size": {
+                  "field": "Total",
+                  "type": "quantitative",
+                  "scale": {
+                    "type": "threshold",
+                    "domain": [251,501,750],
+                    "range": [7,20,35,50]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "width": 400,
+          "height": 125,
+          "layer": [
+            {
+              "transform": [
+                {"filter": {"selection": "pts"}},
+                {"filter": {"selection": "county_click"}}
+              ],
+              "selection": {
+                "brush": {
+                  "encodings": ["x"],
+                  "type": "interval"
+                }
+              },
+              "mark":"bar",
+              "encoding": {
+                "y": {
+                  "aggregate": "count",
+                  "type": "quantitative"
+                },
+                "x": {
+                  "bin": {"maxbins": 50},
+                  "field": "Total",
+                  "type": "quantitative"
+                },
+                "color": {"value": "lightgrey"}
+              }
+            },
+            {
+              "transform": [
+                {"filter": {"selection": "pts"}},
+                {"filter": {"selection": "county_click"}},
+                {"filter": {"selection": "brush"}}
+              ],
+              "mark": "bar",              
+              "encoding": {
+                "y": {
+                  "aggregate": "count",
+                  "type": "nominal",
+                  "axis": {
+                    "title": "Schools",
+                    "titleFontSize": 13,
+                    "labelFontSize": 12,
+                    "titleFontWeight": "bold"
+                  }
+                },
+                "x": {
+                  "bin": {"maxbins": 50},
+                  "field": "Total",
+                  "type": "quantitative",
+                  "axis": {
+                    "title": "Number of Students",
+                    "titleFontSize": 13,
+                    "labelFontSize": 12,
+                    "titleFontWeight": "bold"
+                  }
+                },
+                "color": {"value": "black"}
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "config": {
+    "legend": {
+      "titleFontSize": 15,
+      "labelFontSize": 13
+    }
+  },
+  "title": {
+    "text": "Irish Primary School Explorer",
+    "anchor": "middle",
+    "fontSize": 20,
+    "fontWeight": 800
+  }
+}
